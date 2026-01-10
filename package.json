@@ -1,0 +1,16 @@
+{
+  "name": "family-office-tracker",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "test": "node --test",
+    "import": "node apps/cli/src/cli.js import",
+    "categorize": "node apps/cli/src/cli.js categorize",
+    "export": "node apps/cli/src/cli.js export",
+    "report": "node apps/cli/src/cli.js report"
+  }
+}

@@ -1,0 +1,14 @@
+[
+  {
+    "type": "missing_receipt",
+    "txnId": "generic:2025-01-03:c744f3cd:1",
+    "message": "Receipt required for COSTCO WHOLESALE #123 (-142.18)",
+    "ruleId": "costco-supplies"
+  },
+  {
+    "type": "missing_receipt",
+    "txnId": "generic:2025-01-08:7a94f0fd:4",
+    "message": "Receipt required for UNITED AIRLINES (-412.55)",
+    "ruleId": "airlines-travel"
+  }
+]

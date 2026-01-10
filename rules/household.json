@@ -1,0 +1,25 @@
+{
+  "ventures": ["dream-vacations", "paternal-path", "youman-house"],
+  "rules": [
+    {
+      "id": "openai-chatgpt",
+      "when": { "contains": ["OPENAI", "CHATGPT"] },
+      "then": { "category": "Software", "venture": "youman-house", "requiresReceipt": false, "note": "AI tools" }
+    },
+    {
+      "id": "airlines-travel",
+      "when": { "contains": ["AIRLINES", "UNITED", "DELTA", "SOUTHWEST"] },
+      "then": { "category": "Travel", "venture": "dream-vacations", "requiresReceipt": true, "note": "Travel expense — attach itinerary/receipt" }
+    },
+    {
+      "id": "fuel-gas",
+      "when": { "contains": ["SHELL", "CHEVRON", "ARCO", "EXXON"] },
+      "then": { "category": "Auto", "venture": "dream-vacations", "requiresReceipt": false, "note": "Mileage log recommended" }
+    },
+    {
+      "id": "costco-supplies",
+      "when": { "contains": ["COSTCO"] },
+      "then": { "category": "Supplies", "venture": "dream-vacations", "requiresReceipt": true, "note": "Only business portion deductible — add note" }
+    }
+  ]
+}
