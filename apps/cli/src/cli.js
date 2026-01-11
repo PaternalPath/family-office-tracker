@@ -10,7 +10,7 @@ import {
   generateAlerts,
   generateSummary,
   formatSummaryReport
-} from "../../../packages/core/src/index.js";
+} from "../../../packages/core/src/index-node.js";
 
 const [, , command, ...rest] = process.argv;
 

@@ -1,4 +1,3 @@
-import fs from "node:fs";
 import * as genericParser from "./parsers/generic.js";
 import * as chaseParser from "./parsers/chase.js";
 import * as costcoParser from "./parsers/costco.js";
@@ -12,24 +11,6 @@ const PARSERS = {
   chase: chaseParser,
   costco: costcoParser
 };
-
-/**
- * Parse a CSV file into normalized transactions
- * Routes to the appropriate parser based on source
- *
- * @param {string} filePath - Path to CSV file
- * @param {Object} options - Parser options
- * @param {string} options.source - Source type (generic, chase, costco)
- * @returns {Array} Array of normalized transactions
- */
-export function parseCsvFile(filePath, { source = "generic" } = {}) {
-  if (!fs.existsSync(filePath)) {
-    throw new Error(`File not found: ${filePath}`);
-  }
-
-  const raw = fs.readFileSync(filePath, "utf8");
-  return parseCsvString(raw, { source });
-}
 
 /**
  * Parse CSV string into normalized transactions
