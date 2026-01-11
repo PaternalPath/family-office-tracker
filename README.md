@@ -4,6 +4,8 @@ Policy-driven transaction categorization + Schedule C-ready exports.
 
 **Architecture:** Policy-driven engine + thin CLI (inspired by LedgerRun)
 
+> **Note:** This repository uses generic example venture names. Customize venture names in your local rules files to match your actual business entities.
+
 ## Features
 
 - **Multi-source CSV parsing**: Import from Chase, Costco Citi, or generic CSVs
@@ -36,7 +38,7 @@ npm run categorize -- --rules ./rules/household.json --strict
 npm run report -- --type summary
 
 # Export for a venture
-npm run export -- --venture dream-vacations --year 2025
+npm run export -- --venture travel-franchise --year 2025
 ```
 
 ## Commands
@@ -114,7 +116,7 @@ npm run export -- --venture <name> --year <year> [--out <file>] [--out-dir <dir>
 
 **Example:**
 ```bash
-npm run export -- --venture dream-vacations --year 2025 --out dv-2025.csv
+npm run export -- --venture travel-franchise --year 2025 --out tf-2025.csv
 ```
 
 ### `report` - Generate reports
@@ -342,7 +344,7 @@ Split a transaction across multiple ventures. Percentages must sum to 100.
 
 ```json
 {
-  "ventures": ["dream-vacations", "paternal-path", "youman-house"],
+  "ventures": ["travel-franchise", "paternal-path", "youman-house"],
   "rules": [
     {
       "id": "openai-subscription",
