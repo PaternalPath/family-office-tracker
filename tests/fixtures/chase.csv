@@ -1,0 +1,5 @@
+Transaction Date,Post Date,Description,Category,Type,Amount,Memo
+01/10/2025,01/11/2025,STARBUCKS STORE 12345,Food & Drink,Sale,5.75,
+01/11/2025,01/12/2025,AMAZON.COM,Shopping,Sale,89.99,Office supplies
+01/12/2025,01/13/2025,REFUND - RETAILER,Merchandise,Return,25.00,
+01/15/2025,01/15/2025,PAYMENT THANK YOU,Payment,Payment,500.00,
