@@ -45,6 +45,42 @@ npm run report -- --type summary
 npm run export -- --venture travel-franchise --year 2025
 ```
 
+## Web UI
+
+A clean, Apple-like web interface for browser-based transaction categorization.
+
+**Features:**
+- **100% client-side** - Your data never leaves your browser
+- Drag-and-drop CSV upload
+- Rules editor with validation
+- Real-time summary stats
+- Filterable transaction table
+- Export to JSON and Schedule C CSV
+
+**Local Development:**
+```bash
+npm install
+npm --workspace @family-office-tracker/web run dev
+# Open http://localhost:5173
+```
+
+**Build:**
+```bash
+npm --workspace @family-office-tracker/web run build
+# Output: apps/web/dist
+```
+
+**Deploy to Vercel:**
+
+The web app is configured for one-click Vercel deployment. Connect your repo to Vercel and it will automatically detect the configuration in `vercel.json`.
+
+Alternatively, deploy manually:
+```bash
+npm install
+npm --workspace @family-office-tracker/web run build
+# Deploy apps/web/dist to any static hosting
+```
+
 ## Commands
 
 ### `import` - Import CSV transactions
