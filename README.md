@@ -22,6 +22,10 @@ Policy-driven transaction categorization + Schedule C-ready exports.
 npm install
 npm test
 
+# Copy example rules and customize for your ventures
+cp rules/household.example.json rules/household.json
+# Edit rules/household.json with your venture names and rules
+
 # See all commands
 npm run help
 

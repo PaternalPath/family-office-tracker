@@ -3,6 +3,8 @@ data/
 *.csv
 !tests/fixtures/*.csv
 !samples/*.csv
+rules/*.json
+!rules/*.example.json
 .env
 .DS_Store
 dist/
