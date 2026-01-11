@@ -8,7 +8,9 @@
   ],
   "scripts": {
     "test": "node --test",
+    "help": "node apps/cli/src/cli.js help",
     "import": "node apps/cli/src/cli.js import",
+    "plan": "node apps/cli/src/cli.js plan",
     "categorize": "node apps/cli/src/cli.js categorize",
     "export": "node apps/cli/src/cli.js export",
     "report": "node apps/cli/src/cli.js report"
