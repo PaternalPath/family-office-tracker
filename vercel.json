@@ -1,6 +1,4 @@
 {
-  "buildCommand": "npm install && npm --workspace @family-office-tracker/web run build",
-  "outputDirectory": "apps/web/dist",
-  "framework": "vite",
-  "installCommand": "npm install"
+  "buildCommand": "npm install && cd apps/web && npm run build && cd ../..",
+  "outputDirectory": "apps/web/dist"
 }
