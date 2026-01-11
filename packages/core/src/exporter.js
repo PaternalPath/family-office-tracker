@@ -1,4 +1,3 @@
-import fs from "node:fs";
 
 /**
  * Export transactions for Schedule C tax reporting
@@ -9,7 +8,7 @@ import fs from "node:fs";
  * @param {string} options.outFile - Output file path (optional)
  * @returns {Object} { csv, count }
  */
-export function exportScheduleC(categorizedTxns, { venture, year, outFile }) {
+export function exportScheduleC(categorizedTxns, { venture, year }) {
   const y = String(year);
   const rows = categorizedTxns.filter((t) => {
     return t.venture === venture && t.date.startsWith(y);
@@ -43,7 +42,6 @@ export function exportScheduleC(categorizedTxns, { venture, year, outFile }) {
   }
 
   const csv = lines.join("\n") + "\n";
-  if (outFile) fs.writeFileSync(outFile, csv, "utf8");
   return { csv, count: rows.length };
 }
 

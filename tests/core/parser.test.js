@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { parseCsvString, parseCsvFile } from "../../packages/core/src/parser.js";
+import { parseCsvString } from "../../packages/core/src/parser.js";
+import { parseCsvFile } from "../../packages/core/src/parser-node.js";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
