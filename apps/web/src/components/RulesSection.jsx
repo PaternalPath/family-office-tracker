@@ -1,7 +1,7 @@
 import { useRef } from 'react'
 
 const EXAMPLE_RULES = {
-  "ventures": ["travel-franchise", "paternal-path", "youman-house"],
+  "ventures": ["venture-a", "venture-b", "venture-c"],
   "rules": [
     {
       "id": "openai-subscription",
@@ -12,7 +12,7 @@ const EXAMPLE_RULES = {
       },
       "then": {
         "category": "Software",
-        "venture": "youman-house",
+        "venture": "venture-c",
         "requiresReceipt": false,
         "note": "AI tools subscription"
       }
@@ -28,8 +28,8 @@ const EXAMPLE_RULES = {
         "category": "Internet",
         "requiresReceipt": true,
         "split": [
-          { "venture": "youman-house", "percent": 60, "note": "Primary use" },
-          { "venture": "paternal-path", "percent": 40, "note": "Secondary use" }
+          { "venture": "venture-c", "percent": 60, "note": "Primary use" },
+          { "venture": "venture-a", "percent": 40, "note": "Secondary use" }
         ]
       }
     }
@@ -62,19 +62,24 @@ function RulesSection({ rulesJson, rulesFile, rulesError, onRulesChange }) {
           <div className="card-title">2. Rules</div>
           <div className="card-subtitle">Upload or paste categorization rules</div>
         </div>
-        <div className="flex gap-2">
-          <button
-            className="button button-sm button-secondary"
-            onClick={loadExample}
-          >
-            Load Example
-          </button>
-          <button
-            className="button button-sm button-secondary"
-            onClick={() => fileInputRef.current?.click()}
-          >
-            Upload JSON
-          </button>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '8px' }}>
+          <div className="flex gap-2">
+            <button
+              className="button button-sm button-secondary"
+              onClick={loadExample}
+            >
+              Load Example
+            </button>
+            <button
+              className="button button-sm button-secondary"
+              onClick={() => fileInputRef.current?.click()}
+            >
+              Upload JSON
+            </button>
+          </div>
+          <p style={{ fontSize: '12px', color: 'var(--gray-500)', margin: 0 }}>
+            Example data only — nothing personal is included.
+          </p>
         </div>
       </div>
 
