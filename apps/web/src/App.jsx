@@ -10,7 +10,10 @@ import {
 
 import UploadSection from './components/UploadSection'
 import RulesSection from './components/RulesSection'
-import ResultsSection from './components/ResultsSection'
+import Dashboard from './components/Dashboard'
+import TransactionsView from './components/TransactionsView'
+import LoadingSkeleton from './components/ui/LoadingSkeleton'
+import EmptyState from './components/ui/EmptyState'
 
 function App() {
   // CSV state
@@ -29,6 +32,9 @@ function App() {
   const [summary, setSummary] = useState(null)
   const [alerts, setAlerts] = useState(null)
   const [isProcessing, setIsProcessing] = useState(false)
+
+  // View state
+  const [activeView, setActiveView] = useState('setup')
 
   // Handle CSV upload
   const handleCsvUpload = async (file, source) => {
@@ -84,6 +90,9 @@ function App() {
       // Generate alerts
       const alertsData = generateAlerts(result.categorized)
       setAlerts(alertsData)
+
+      // Switch to dashboard view
+      setActiveView('dashboard')
     } catch (err) {
       setRulesError(err.message)
     } finally {
@@ -132,57 +141,134 @@ function App() {
         </div>
       </div>
 
-      <div className="container">
-        {/* Section 1: Upload CSV */}
-        <UploadSection
-          csvFile={csvFile}
-          csvSource={csvSource}
-          transactions={transactions}
-          parseError={parseError}
-          onUpload={handleCsvUpload}
-        />
-
-        {/* Section 2: Rules */}
-        <RulesSection
-          rulesJson={rulesJson}
-          rulesFile={rulesFile}
-          rulesError={rulesError}
-          onRulesChange={handleRulesChange}
-        />
-
-        {/* Section 3: Run + Results */}
-        {transactions && transactions.length > 0 && (
-          <div className="card">
-            <div className="card-header">
-              <div>
-                <div className="card-title">Run Categorization</div>
-                <div className="card-subtitle">
-                  Process {transactions.length} transaction{transactions.length !== 1 ? 's' : ''}
-                </div>
-              </div>
+      {/* Navigation Tabs */}
+      {categorized && (
+        <div style={{ background: 'white', borderBottom: '1px solid var(--gray-200)' }}>
+          <div className="container">
+            <div style={{ display: 'flex', gap: '8px', padding: '0' }}>
               <button
-                className="button button-primary"
-                onClick={handleRunCategorization}
-                disabled={!canRunCategorization || isProcessing}
+                onClick={() => setActiveView('dashboard')}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  padding: '16px 20px',
+                  fontSize: '14px',
+                  fontWeight: 500,
+                  color: activeView === 'dashboard' ? 'var(--blue-500)' : 'var(--gray-600)',
+                  borderBottom: activeView === 'dashboard' ? '2px solid var(--blue-500)' : '2px solid transparent',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease'
+                }}
               >
-                {isProcessing ? 'Processing...' : 'Run Categorization'}
+                📊 Dashboard
+              </button>
+              <button
+                onClick={() => setActiveView('transactions')}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  padding: '16px 20px',
+                  fontSize: '14px',
+                  fontWeight: 500,
+                  color: activeView === 'transactions' ? 'var(--blue-500)' : 'var(--gray-600)',
+                  borderBottom: activeView === 'transactions' ? '2px solid var(--blue-500)' : '2px solid transparent',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                💳 Transactions
+              </button>
+              <button
+                onClick={() => setActiveView('setup')}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  padding: '16px 20px',
+                  fontSize: '14px',
+                  fontWeight: 500,
+                  color: activeView === 'setup' ? 'var(--blue-500)' : 'var(--gray-600)',
+                  borderBottom: activeView === 'setup' ? '2px solid var(--blue-500)' : '2px solid transparent',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                ⚙️ Setup
               </button>
             </div>
+          </div>
+        </div>
+      )}
 
-            {!rulesFile && !rulesError && (
-              <div className="alert alert-info">
-                Upload or paste rules JSON above to enable categorization.
+      <div className="container">
+        {/* Setup View */}
+        {activeView === 'setup' && (
+          <>
+            {/* Section 1: Upload CSV */}
+            <UploadSection
+              csvFile={csvFile}
+              csvSource={csvSource}
+              transactions={transactions}
+              parseError={parseError}
+              onUpload={handleCsvUpload}
+            />
+
+            {/* Section 2: Rules */}
+            <RulesSection
+              rulesJson={rulesJson}
+              rulesFile={rulesFile}
+              rulesError={rulesError}
+              onRulesChange={handleRulesChange}
+            />
+
+            {/* Section 3: Run Categorization */}
+            {transactions && transactions.length > 0 && (
+              <div className="card">
+                <div className="card-header">
+                  <div>
+                    <div className="card-title">Run Categorization</div>
+                    <div className="card-subtitle">
+                      Process {transactions.length} transaction{transactions.length !== 1 ? 's' : ''}
+                    </div>
+                  </div>
+                  <button
+                    className="button button-primary"
+                    onClick={handleRunCategorization}
+                    disabled={!canRunCategorization || isProcessing}
+                  >
+                    {isProcessing ? 'Processing...' : 'Run Categorization'}
+                  </button>
+                </div>
+
+                {!rulesFile && !rulesError && (
+                  <div className="alert alert-info">
+                    Upload or paste rules JSON above to enable categorization.
+                  </div>
+                )}
+
+                {isProcessing && (
+                  <div>
+                    <LoadingSkeleton count={3} height={60} />
+                  </div>
+                )}
               </div>
             )}
-          </div>
+          </>
         )}
 
-        {/* Results */}
-        {categorized && summary && alerts && (
-          <ResultsSection
+        {/* Dashboard View */}
+        {activeView === 'dashboard' && categorized && summary && alerts && (
+          <Dashboard
             categorized={categorized}
             summary={summary}
             alerts={alerts}
+          />
+        )}
+
+        {/* Transactions View */}
+        {activeView === 'transactions' && categorized && summary && (
+          <TransactionsView
+            categorized={categorized}
+            summary={summary}
             onDownloadJson={downloadJson}
             onExportScheduleC={handleExportScheduleC}
           />

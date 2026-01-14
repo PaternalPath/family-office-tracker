@@ -47,15 +47,24 @@ npm run export -- --venture travel-franchise --year 2025
 
 ## Web UI
 
-A clean, Apple-like web interface for browser-based transaction categorization.
+A modern, personal finance app-style web interface for browser-based transaction categorization.
 
-**Features:**
+> **UI Refresh (2025):** The web app has been redesigned with a clean, intuitive dashboard, enhanced transaction search, and real-time financial insights. All processing happens locally in your browser.
+
+**Key Features:**
 - **100% client-side** - Your data never leaves your browser
-- Drag-and-drop CSV upload
-- Rules editor with validation
-- Real-time summary stats
-- Filterable transaction table
-- Export to JSON and Schedule C CSV
+- **📊 Dashboard View** - KPI cards showing income, expenses, net cash flow, and categorization status
+- **💳 Transactions View** - Searchable table with filters, sticky header, and category badges
+- **⚡ Real-time Search** - Instant filtering across descriptions, categories, and amounts
+- **📈 Financial Insights** - Top spending categories, venture breakdowns, and recent activity
+- **⚙️ Setup Wizard** - Drag-and-drop CSV upload with rules editor and validation
+- **💾 Smart Exports** - Download filtered data or generate Schedule C exports
+
+**Component System:**
+- Reusable UI components (Badge, EmptyState, LoadingSkeleton, Modal, SearchBar)
+- Apple-inspired design with clean typography and spacing
+- Mobile-responsive with optimized layouts
+- Accessible focus states and keyboard navigation
 
 **Local Development:**
 ```bash
@@ -67,7 +76,7 @@ npm --workspace @family-office-tracker/web run dev
 **Build:**
 ```bash
 npm --workspace @family-office-tracker/web run build
-# Output: apps/web/dist
+# Output: apps/web/dist (~173KB gzipped)
 ```
 
 **Deploy to Vercel:**
