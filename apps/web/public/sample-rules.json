@@ -1,0 +1,104 @@
+{
+  "ventures": ["consulting", "personal", "travel"],
+  "rules": [
+    {
+      "id": "ai-tools",
+      "priority": 100,
+      "when": { "any_contains": ["OPENAI", "CHATGPT", "ANTHROPIC"] },
+      "then": {
+        "category": "Software",
+        "venture": "consulting",
+        "requiresReceipt": false,
+        "note": "AI tools for business"
+      }
+    },
+    {
+      "id": "cloud-services",
+      "priority": 90,
+      "when": { "any_contains": ["AWS", "DIGITALOCEAN", "GITHUB", "GOOGLE *GSUITE"] },
+      "then": {
+        "category": "Software",
+        "venture": "consulting",
+        "requiresReceipt": false,
+        "note": "Cloud infrastructure"
+      }
+    },
+    {
+      "id": "saas-tools",
+      "priority": 85,
+      "when": { "any_contains": ["ZOOM", "SLACK", "LINEAR", "MICROSOFT 365"] },
+      "then": {
+        "category": "Software",
+        "venture": "consulting",
+        "requiresReceipt": false,
+        "note": "Productivity software"
+      }
+    },
+    {
+      "id": "airlines",
+      "priority": 80,
+      "when": { "any_contains": ["AIRLINES", "UNITED", "DELTA", "SOUTHWEST"] },
+      "then": {
+        "category": "Travel",
+        "venture": "travel",
+        "requiresReceipt": true,
+        "note": "Flight expense - attach itinerary"
+      }
+    },
+    {
+      "id": "rideshare",
+      "priority": 75,
+      "when": { "any_contains": ["UBER", "LYFT"] },
+      "then": {
+        "category": "Travel",
+        "venture": "travel",
+        "requiresReceipt": false,
+        "note": "Ground transportation"
+      }
+    },
+    {
+      "id": "fuel",
+      "priority": 70,
+      "when": { "any_contains": ["SHELL", "CHEVRON", "ARCO", "EXXON", "GASOLINE"] },
+      "then": {
+        "category": "Auto",
+        "venture": "personal",
+        "requiresReceipt": false,
+        "note": "Vehicle fuel"
+      }
+    },
+    {
+      "id": "costco-business",
+      "priority": 60,
+      "when": { "all_contains": ["COSTCO", "WHOLESALE"] },
+      "then": {
+        "category": "Supplies",
+        "venture": "consulting",
+        "requiresReceipt": true,
+        "note": "Office supplies from Costco"
+      }
+    },
+    {
+      "id": "amazon",
+      "priority": 50,
+      "when": { "any_contains": ["AMAZON"] },
+      "then": {
+        "category": "Supplies",
+        "venture": "consulting",
+        "requiresReceipt": true,
+        "note": "Review item details"
+      }
+    },
+    {
+      "id": "refunds",
+      "priority": 40,
+      "when": { "any_contains": ["REFUND"] },
+      "then": {
+        "category": "Refund",
+        "venture": "personal",
+        "requiresReceipt": false,
+        "note": "Credit/refund received"
+      }
+    }
+  ]
+}
