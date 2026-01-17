@@ -109,7 +109,6 @@ function UploadSection({ csvFile, csvSource, transactions, parseError, onUpload 
           <button
             className="button button-sm button-secondary"
             onClick={() => {
-              setCsvFile(null)
               onUpload(null, source)
               if (fileInputRef.current) fileInputRef.current.value = ''
             }}

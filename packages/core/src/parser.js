@@ -17,8 +17,8 @@ const PARSERS = {
  * Routes to the appropriate parser based on source
  *
  * @param {string} csvString - CSV content
- * @param {Object} options - Parser options
- * @param {string} options.source - Source type (generic, chase, costco)
+ * @param {Object} [options] - Parser options
+ * @param {string} [options.source='generic'] - Source type (generic, chase, costco)
  * @returns {Array} Array of normalized transactions
  *
  * Each transaction has the structure:
