@@ -8,14 +8,30 @@ export default [
   {
     ignores: ['**/dist/**', '**/node_modules/**', 'coverage/**']
   },
-  // Node.js files (core, CLI, tests, config)
+  // Node.js files (core, CLI, unit tests, config)
   {
-    files: ['packages/**/*.js', 'apps/cli/**/*.js', 'tests/**/*.js', '*.config.js'],
+    files: ['packages/**/*.js', 'apps/cli/**/*.js', 'tests/core/**/*.js', '*.config.js'],
     languageOptions: {
       ecmaVersion: 2022,
       sourceType: 'module',
       globals: {
         ...globals.node
+      }
+    },
+    rules: {
+      'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+      'no-console': 'off'
+    }
+  },
+  // E2E tests (Playwright) - need browser globals for page.evaluate
+  {
+    files: ['tests/e2e/**/*.js'],
+    languageOptions: {
+      ecmaVersion: 2022,
+      sourceType: 'module',
+      globals: {
+        ...globals.node,
+        ...globals.browser
       }
     },
     rules: {
