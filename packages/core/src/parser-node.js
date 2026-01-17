@@ -11,8 +11,8 @@ import { parseCsvString } from "./parser.js";
  * Routes to the appropriate parser based on source
  *
  * @param {string} filePath - Path to CSV file
- * @param {Object} options - Parser options
- * @param {string} options.source - Source type (generic, chase, costco)
+ * @param {Object} [options] - Parser options
+ * @param {string} [options.source='generic'] - Source type (generic, chase, costco)
  * @returns {Array} Array of normalized transactions
  */
 export function parseCsvFile(filePath, { source = "generic" } = {}) {

@@ -1,97 +1,163 @@
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import {
-  parseCsvString,
+  validateAndParseCsv,
   validateRulesFile,
   categorizeTransactions,
   exportScheduleC,
   generateAlerts,
   generateSummary
 } from '@family-office-tracker/core'
+import { usePersistedState } from './hooks/usePersistedState.js'
 
-import UploadSection from './components/UploadSection'
-import RulesSection from './components/RulesSection'
-import ResultsSection from './components/ResultsSection'
+import UploadSection from './components/UploadSection.jsx'
+import RulesSection from './components/RulesSection.jsx'
+import ResultsSection from './components/ResultsSection.jsx'
+
+// Sample data URLs
+const SAMPLE_CSV_URL = '/sample-transactions.csv'
+const SAMPLE_RULES_URL = '/sample-rules.json'
 
 function App() {
-  // CSV state
+  // Persisted state (survives page refresh)
+  const {
+    transactions,
+    rulesFile,
+    categorized,
+    summary,
+    setTransactions,
+    setRulesFile,
+    setCategorization,
+    clearData,
+    isLoading,
+    hasData
+  } = usePersistedState()
+
+  // UI-only state (not persisted)
   const [csvFile, setCsvFile] = useState(null)
   const [csvSource, setCsvSource] = useState('generic')
-  const [transactions, setTransactions] = useState(null)
   const [parseError, setParseError] = useState(null)
-
-  // Rules state
-  const [rulesFile, setRulesFile] = useState(null)
+  const [parseErrors, setParseErrors] = useState([])
   const [rulesJson, setRulesJson] = useState('')
   const [rulesError, setRulesError] = useState(null)
-
-  // Results state
-  const [categorized, setCategorized] = useState(null)
-  const [summary, setSummary] = useState(null)
   const [alerts, setAlerts] = useState(null)
   const [isProcessing, setIsProcessing] = useState(false)
+  const [loadingSample, setLoadingSample] = useState(false)
+
+  // Sync rules JSON with persisted rulesFile
+  useEffect(() => {
+    if (rulesFile && !rulesJson) {
+      setRulesJson(JSON.stringify(rulesFile, null, 2))
+    }
+  }, [rulesFile, rulesJson])
 
   // Handle CSV upload
-  const handleCsvUpload = async (file, source) => {
-    setCsvFile(file)
-    setCsvSource(source)
-    setParseError(null)
+  const handleCsvUpload = useCallback(
+    async (file, source) => {
+      if (!file) {
+        setCsvFile(null)
+        setTransactions([])
+        setParseError(null)
+        setParseErrors([])
+        return
+      }
 
-    try {
-      const text = await file.text()
-      const parsed = parseCsvString(text, { source })
-      setTransactions(parsed)
-    } catch (err) {
-      setParseError(err.message)
-      setTransactions(null)
-    }
-  }
+      setCsvFile(file)
+      setCsvSource(source)
+      setParseError(null)
+      setParseErrors([])
+
+      try {
+        const text = await file.text()
+        const result = validateAndParseCsv(text, { source })
+
+        if (result.errors.length > 0 && result.transactions.length === 0) {
+          setParseError(result.errors[0].message)
+          setParseErrors(result.errors)
+          setTransactions([])
+        } else {
+          setTransactions(result.transactions)
+          setParseErrors(result.errors)
+        }
+      } catch (err) {
+        setParseError(err.message)
+        setTransactions([])
+      }
+    },
+    [setTransactions]
+  )
 
   // Handle rules input
-  const handleRulesChange = (jsonText) => {
-    setRulesJson(jsonText)
-    setRulesError(null)
+  const handleRulesChange = useCallback(
+    (jsonText) => {
+      setRulesJson(jsonText)
+      setRulesError(null)
 
-    if (!jsonText.trim()) {
-      setRulesFile(null)
-      return
-    }
+      if (!jsonText.trim()) {
+        setRulesFile(null)
+        return
+      }
 
+      try {
+        const parsed = JSON.parse(jsonText)
+        validateRulesFile(parsed)
+        setRulesFile(parsed)
+      } catch (err) {
+        setRulesError(err.message)
+        setRulesFile(null)
+      }
+    },
+    [setRulesFile]
+  )
+
+  // Load sample data
+  const handleLoadSampleData = useCallback(async () => {
+    setLoadingSample(true)
     try {
-      const parsed = JSON.parse(jsonText)
-      validateRulesFile(parsed)
-      setRulesFile(parsed)
+      // Load sample CSV
+      const csvResponse = await fetch(SAMPLE_CSV_URL)
+      if (csvResponse.ok) {
+        const csvText = await csvResponse.text()
+        const result = validateAndParseCsv(csvText, { source: 'generic' })
+        setTransactions(result.transactions)
+        setParseErrors(result.errors)
+        setCsvFile({ name: 'sample-transactions.csv', size: csvText.length })
+      }
+
+      // Load sample rules
+      const rulesResponse = await fetch(SAMPLE_RULES_URL)
+      if (rulesResponse.ok) {
+        const rulesData = await rulesResponse.json()
+        setRulesFile(rulesData)
+        setRulesJson(JSON.stringify(rulesData, null, 2))
+      }
     } catch (err) {
-      setRulesError(err.message)
-      setRulesFile(null)
+      console.error('Failed to load sample data:', err)
+    } finally {
+      setLoadingSample(false)
     }
-  }
+  }, [setTransactions, setRulesFile])
 
   // Run categorization
-  const handleRunCategorization = () => {
-    if (!transactions || !rulesFile) return
+  const handleRunCategorization = useCallback(() => {
+    if (!transactions || transactions.length === 0 || !rulesFile) return
 
     setIsProcessing(true)
 
     try {
-      // Categorize transactions
       const result = categorizeTransactions(transactions, rulesFile)
-      setCategorized(result.categorized)
-
-      // Generate summary
       const summaryData = generateSummary(result.categorized)
-      setSummary(summaryData)
-
-      // Generate alerts
       const alertsData = generateAlerts(result.categorized)
+
+      setCategorization(result.categorized, summaryData)
       setAlerts(alertsData)
     } catch (err) {
       setRulesError(err.message)
     } finally {
       setIsProcessing(false)
     }
-  }
+  }, [transactions, rulesFile, setCategorization])
 
-  // Download JSON
+  // Download helpers
   const downloadJson = (data, filename) => {
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
     const url = URL.createObjectURL(blob)
@@ -102,7 +168,6 @@ function App() {
     URL.revokeObjectURL(url)
   }
 
-  // Download CSV
   const downloadCsv = (csvString, filename) => {
     const blob = new Blob([csvString], { type: 'text/csv' })
     const url = URL.createObjectURL(blob)
@@ -113,33 +178,89 @@ function App() {
     URL.revokeObjectURL(url)
   }
 
-  // Export Schedule C
   const handleExportScheduleC = (venture, year) => {
     if (!categorized) return
-
     const { csv } = exportScheduleC(categorized, { venture, year })
     downloadCsv(csv, `export-${venture}-${year}.csv`)
   }
 
+  const handleClearData = () => {
+    if (window.confirm('Are you sure you want to clear all data? This cannot be undone.')) {
+      clearData()
+      setCsvFile(null)
+      setRulesJson('')
+      setParseError(null)
+      setParseErrors([])
+      setRulesError(null)
+      setAlerts(null)
+    }
+  }
+
   const canRunCategorization = transactions && transactions.length > 0 && rulesFile
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="loading-screen">
+        <div className="loading-spinner" />
+        <p>Loading...</p>
+      </div>
+    )
+  }
 
   return (
     <>
-      <div className="header">
+      <header className="header">
         <div className="container header-content">
           <h1>Family Office Tracker</h1>
-          <span className="header-note">🔒 Local-only processing</span>
+          <div className="header-actions">
+            <span className="header-note">Local-only processing</span>
+            {hasData && (
+              <button
+                className="button button-sm button-secondary"
+                onClick={handleClearData}
+                aria-label="Clear all data"
+              >
+                Clear Data
+              </button>
+            )}
+          </div>
         </div>
-      </div>
+      </header>
 
-      <div className="container">
+      <main className="container">
+        {/* Empty state for first-time users */}
+        {!hasData && transactions.length === 0 && !csvFile && (
+          <div className="card empty-state">
+            <div className="empty-state-icon">📊</div>
+            <h2>Welcome to Family Office Tracker</h2>
+            <p className="text-muted">
+              Import your bank transactions, set up categorization rules, and get insights into your
+              spending.
+            </p>
+            <div className="empty-state-actions">
+              <button
+                className="button button-primary"
+                onClick={handleLoadSampleData}
+                disabled={loadingSample}
+              >
+                {loadingSample ? 'Loading...' : 'Load Sample Data'}
+              </button>
+              <span className="text-muted text-sm">or upload your own CSV below</span>
+            </div>
+          </div>
+        )}
+
         {/* Section 1: Upload CSV */}
         <UploadSection
           csvFile={csvFile}
           csvSource={csvSource}
           transactions={transactions}
           parseError={parseError}
+          parseErrors={parseErrors}
           onUpload={handleCsvUpload}
+          onLoadSample={handleLoadSampleData}
+          loadingSample={loadingSample}
         />
 
         {/* Section 2: Rules */}
@@ -152,33 +273,42 @@ function App() {
 
         {/* Section 3: Run + Results */}
         {transactions && transactions.length > 0 && (
-          <div className="card">
+          <section className="card" aria-labelledby="categorization-title">
             <div className="card-header">
               <div>
-                <div className="card-title">Run Categorization</div>
-                <div className="card-subtitle">
+                <h2 id="categorization-title" className="card-title">
+                  Run Categorization
+                </h2>
+                <p className="card-subtitle">
                   Process {transactions.length} transaction{transactions.length !== 1 ? 's' : ''}
-                </div>
+                  {parseErrors.length > 0 && (
+                    <span className="text-warning">
+                      {' '}
+                      ({parseErrors.length} row{parseErrors.length !== 1 ? 's' : ''} skipped)
+                    </span>
+                  )}
+                </p>
               </div>
               <button
                 className="button button-primary"
                 onClick={handleRunCategorization}
                 disabled={!canRunCategorization || isProcessing}
+                aria-busy={isProcessing}
               >
                 {isProcessing ? 'Processing...' : 'Run Categorization'}
               </button>
             </div>
 
             {!rulesFile && !rulesError && (
-              <div className="alert alert-info">
+              <div className="alert alert-info" role="status">
                 Upload or paste rules JSON above to enable categorization.
               </div>
             )}
-          </div>
+          </section>
         )}
 
         {/* Results */}
-        {categorized && summary && alerts && (
+        {categorized && summary && (
           <ResultsSection
             categorized={categorized}
             summary={summary}
@@ -187,7 +317,15 @@ function App() {
             onExportScheduleC={handleExportScheduleC}
           />
         )}
-      </div>
+      </main>
+
+      <footer className="footer">
+        <div className="container">
+          <p className="text-muted text-sm">
+            Your data stays on your device. Nothing is sent to any server.
+          </p>
+        </div>
+      </footer>
     </>
   )
 }

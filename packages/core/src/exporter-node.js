@@ -12,8 +12,8 @@ import { exportScheduleC as exportScheduleCCore } from "./exporter.js";
  * @param {Object} options - Export options
  * @param {string} options.venture - Venture to filter by
  * @param {string|number} options.year - Year to filter by
- * @param {string} options.outFile - Output file path (optional)
- * @returns {Object} { csv, count }
+ * @param {string} [options.outFile] - Output file path (optional)
+ * @returns {{ csv: string, count: number }}
  */
 export function exportScheduleC(categorizedTxns, { venture, year, outFile }) {
   const result = exportScheduleCCore(categorizedTxns, { venture, year });

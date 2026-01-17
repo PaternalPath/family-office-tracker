@@ -34,7 +34,7 @@ export function categorizeTransactions(transactions, rulesFile) {
       categorized.push(...splitTxns);
 
       // Check for receipt requirement on split transactions
-      if (Boolean(then.requiresReceipt)) {
+      if (then.requiresReceipt) {
         alerts.push({
           type: "missing_receipt",
           txnId: txn.id,
