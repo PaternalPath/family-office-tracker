@@ -64,9 +64,6 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
-      - name: Build web app
-        run: npm --workspace @family-office-tracker/web run build
-
       - name: Run Playwright tests
         run: npm run test:e2e
 
