@@ -148,6 +148,15 @@ body {
   font-size: 13px;
 }
 
+/* File input as button */
+.file-input-label {
+  cursor: pointer;
+}
+
+.file-input-hidden {
+  display: none;
+}
+
 /* Form elements */
 .form-group {
   margin-bottom: 20px;

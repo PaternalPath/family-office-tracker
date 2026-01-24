@@ -195,6 +195,52 @@ export function exportBackup() {
 }
 
 /**
+ * Validate backup data structure
+ * @param {Object} data - Parsed backup data
+ * @returns {{ valid: boolean, error?: string }}
+ */
+function validateBackupStructure(data) {
+  if (typeof data !== 'object' || data === null) {
+    return { valid: false, error: 'Invalid backup format: expected an object' }
+  }
+
+  // Check for required fields
+  if (data.transactions !== undefined && !Array.isArray(data.transactions)) {
+    return { valid: false, error: 'Invalid backup format: transactions must be an array' }
+  }
+
+  // Validate transactions structure if present
+  if (Array.isArray(data.transactions) && data.transactions.length > 0) {
+    const sample = data.transactions[0]
+    if (typeof sample !== 'object' || sample === null) {
+      return { valid: false, error: 'Invalid backup format: transactions contain invalid entries' }
+    }
+    // Check for expected transaction fields
+    const hasRequiredFields = 'date' in sample && 'description' in sample && 'amount' in sample
+    if (!hasRequiredFields) {
+      return { valid: false, error: 'Invalid backup format: transactions missing required fields (date, description, amount)' }
+    }
+  }
+
+  // Validate rulesFile structure if present
+  if (data.rulesFile !== undefined && data.rulesFile !== null) {
+    if (typeof data.rulesFile !== 'object') {
+      return { valid: false, error: 'Invalid backup format: rulesFile must be an object' }
+    }
+    if (!Array.isArray(data.rulesFile.rules)) {
+      return { valid: false, error: 'Invalid backup format: rulesFile.rules must be an array' }
+    }
+  }
+
+  // Validate categorized structure if present
+  if (data.categorized !== undefined && data.categorized !== null && !Array.isArray(data.categorized)) {
+    return { valid: false, error: 'Invalid backup format: categorized must be an array' }
+  }
+
+  return { valid: true }
+}
+
+/**
  * Import data from backup
  * @param {string} jsonString
  * @returns {{ success: boolean, error?: string }}
@@ -203,9 +249,10 @@ export function importBackup(jsonString) {
   try {
     const data = JSON.parse(jsonString)
 
-    // Basic validation
-    if (typeof data !== 'object' || data === null) {
-      return { success: false, error: 'Invalid backup format' }
+    // Validate backup structure
+    const validation = validateBackupStructure(data)
+    if (!validation.valid) {
+      return { success: false, error: validation.error }
     }
 
     // Migrate and save
