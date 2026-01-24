@@ -215,6 +215,17 @@ function App() {
     const file = event.target.files?.[0]
     if (!file) return
 
+    // Confirm before overwriting existing data
+    if (hasData) {
+      const confirmed = window.confirm(
+        'This will replace all existing data with the backup. Are you sure you want to continue?'
+      )
+      if (!confirmed) {
+        event.target.value = ''
+        return
+      }
+    }
+
     const reader = new FileReader()
     reader.onload = (e) => {
       const result = importBackup(e.target?.result)
@@ -232,6 +243,7 @@ function App() {
         setParseErrors([])
         setRulesError(null)
         setAlerts(null)
+        window.alert('Backup restored successfully.')
       } else {
         window.alert(`Failed to import backup: ${result.error}`)
       }
@@ -269,13 +281,13 @@ function App() {
                 Export Backup
               </button>
             )}
-            <label className="button button-sm button-secondary" style={{ cursor: 'pointer' }}>
+            <label className="button button-sm button-secondary file-input-label">
               Import Backup
               <input
                 type="file"
                 accept=".json"
                 onChange={handleImportBackup}
-                style={{ display: 'none' }}
+                className="file-input-hidden"
                 aria-label="Import backup file"
               />
             </label>
