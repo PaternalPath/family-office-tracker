@@ -8,6 +8,7 @@ import {
   generateSummary
 } from '@family-office-tracker/core'
 import { usePersistedState } from './hooks/usePersistedState.js'
+import { exportBackup, importBackup } from './lib/storage.js'
 
 import UploadSection from './components/UploadSection.jsx'
 import RulesSection from './components/RulesSection.jsx'
@@ -28,6 +29,7 @@ function App() {
     setRulesFile,
     setCategorization,
     clearData,
+    reloadData,
     isLoading,
     hasData
   } = usePersistedState()
@@ -196,6 +198,49 @@ function App() {
     }
   }
 
+  // Export backup as JSON file
+  const handleExportBackup = () => {
+    const backup = exportBackup()
+    const blob = new Blob([backup], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `family-office-backup-${new Date().toISOString().split('T')[0]}.json`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
+  // Import backup from JSON file
+  const handleImportBackup = (event) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      const result = importBackup(e.target?.result)
+      if (result.success) {
+        reloadData()
+        // Sync UI state with restored data
+        const data = JSON.parse(e.target?.result)
+        if (data.rulesFile) {
+          setRulesJson(JSON.stringify(data.rulesFile, null, 2))
+        } else {
+          setRulesJson('')
+        }
+        setCsvFile(null)
+        setParseError(null)
+        setParseErrors([])
+        setRulesError(null)
+        setAlerts(null)
+      } else {
+        window.alert(`Failed to import backup: ${result.error}`)
+      }
+    }
+    reader.readAsText(file)
+    // Reset input so same file can be selected again
+    event.target.value = ''
+  }
+
   const canRunCategorization = transactions && transactions.length > 0 && rulesFile
 
   // Show loading state
@@ -215,6 +260,25 @@ function App() {
           <h1>Family Office Tracker</h1>
           <div className="header-actions">
             <span className="header-note">Local-only processing</span>
+            {hasData && (
+              <button
+                className="button button-sm button-secondary"
+                onClick={handleExportBackup}
+                aria-label="Export backup"
+              >
+                Export Backup
+              </button>
+            )}
+            <label className="button button-sm button-secondary" style={{ cursor: 'pointer' }}>
+              Import Backup
+              <input
+                type="file"
+                accept=".json"
+                onChange={handleImportBackup}
+                style={{ display: 'none' }}
+                aria-label="Import backup file"
+              />
+            </label>
             {hasData && (
               <button
                 className="button button-sm button-secondary"

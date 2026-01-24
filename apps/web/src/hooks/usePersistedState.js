@@ -66,6 +66,15 @@ export function usePersistedState() {
     setHasData(false)
   }, [])
 
+  const reloadData = useCallback(() => {
+    const data = loadData()
+    setTransactionsState(data.transactions || [])
+    setRulesFileState(data.rulesFile)
+    setCategorizedState(data.categorized)
+    setSummaryState(data.summary)
+    setHasData(hasStoredData())
+  }, [])
+
   return {
     // State
     transactions,
@@ -80,6 +89,7 @@ export function usePersistedState() {
 
     // Actions
     clearData,
+    reloadData,
 
     // UI state
     isLoading,
